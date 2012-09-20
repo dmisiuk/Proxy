@@ -1,7 +1,3 @@
---=partminslerbyboundary
-Content-Type: text/xml; charset=UTF-8
-Content-Id: <soappart>
-
 <?xml version="1.0" encoding="UTF-8"?>
 <SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.xmlsoap.org/soap/envelope/ http://www.oasis-open.org/committees/ebxml-msg/schema/envelope.xsd">
 	<SOAP-ENV:Header xsi:schemaLocation="http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd http://www.oasis-open.org/committees/ebxml-msg/schema/msg-header-2_0.xsd">
@@ -32,7 +28,3 @@ Content-Id: <soappart>
 		</eb:Manifest>
 	</SOAP-ENV:Body>
 </SOAP-ENV:Envelope>
---=partminslerbyboundary
-Content-Type: text/plain; charset="utf-8"
-Content-ID: Payload-0
-

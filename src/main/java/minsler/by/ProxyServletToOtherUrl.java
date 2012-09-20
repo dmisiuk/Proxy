@@ -80,7 +80,12 @@ public class ProxyServletToOtherUrl extends HttpServlet {
 
 		String endBoundary = "--" + boundaryOfInputRequest + "--" + "\n";
 		int endIndex = indexContentIdPayload + contentIdPayload.length();
-		fosSoapFile.write(sb.substring(0, endIndex).getBytes());
+		int startSoapXml = sb.indexOf("Content-Id: <soappart>\n\n")
+				+ "Content-Id: <soappart>\n\n".length();
+		int endSaopXml = sb.indexOf("\n--" + boundaryOfInputRequest);
+		System.out.println("statSoap: " + startSoapXml + "\nEndSoap: "
+				+ endSaopXml);
+		fosSoapFile.write(sb.substring(startSoapXml, endSaopXml).getBytes());
 		fosSoapFile.flush();
 		fosSoapFile.close();
 
