@@ -2,6 +2,7 @@ package by.minsler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,9 +15,13 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
+
 import by.minsler.boundary.BoundaryGenerator;
 
 public class ProxyServlet extends MainServlet {
+
+	private static Logger logger = Logger.getLogger(ProxyServlet.class);
 
 	URL receiverUrl = null;
 
@@ -28,17 +33,16 @@ public class ProxyServlet extends MainServlet {
 		String url = config.getInitParameter("receiverUrl");
 		try {
 			receiverUrl = new URL(url);
-			System.out.println("url initialized");
+			logger.info("url initialized");
 		} catch (MalformedURLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("error initializing url");
+			logger.error("error initializing url" + e);
 		}
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
+		logger.info("Connected to servlet");
 		System.out.println("ProxyServlet: connected to servlet");
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setCharacterEncoding("utf-8");
@@ -57,8 +61,9 @@ public class ProxyServlet extends MainServlet {
 		boolean isBodyAttachment = false;
 		StringBuilder sb = new StringBuilder();
 		int nread;
-		FileOutputStream fosSoapFile = new FileOutputStream(
-				"upload/uploaded-soap.xml");
+		String homeDir = getServletContext().getRealPath("/");
+		File soapFile = new File(homeDir, "WEB-INF/upload/uploaded-soap.xml");
+		FileOutputStream fosSoapFile = new FileOutputStream(soapFile);
 		String contentIdPayload = "Content-ID: Payload-0" + "\n\n";
 		int indexFrom = 0;
 		int indexContentIdPayload = -1;
@@ -142,5 +147,4 @@ public class ProxyServlet extends MainServlet {
 		connection.disconnect();
 		out.println("success");
 	}
-
 }

@@ -5,7 +5,6 @@
 </head>
 
 <body>
-<h2>Hello World!</h2>
 <h2>Servlet with allocation file in memory</h2>
 <form action="proxyInMemory" method="post" enctype="multipart/form-data" >
 <input type="file" name="data">

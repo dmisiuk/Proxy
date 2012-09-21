@@ -1,6 +1,7 @@
 package by.minsler;
 
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -44,7 +45,10 @@ public class EndReceiverServlet extends MainServlet {
 
 		StringBuilder sb = new StringBuilder();
 		int nread;
-		FileOutputStream fos = new FileOutputStream("upload/attachment.part");
+		String homeDir = getServletContext().getRealPath("/");
+		File attachmentFile = new File(homeDir,
+				"WEB-INF/upload/attachment.part");
+		FileOutputStream fos = new FileOutputStream(attachmentFile);
 		String contentIdPayload = "Content-ID: Payload-0" + "\n\n";
 		int indexFrom = 0;
 		int indexContentIdPayload = -1;
