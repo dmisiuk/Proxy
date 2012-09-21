@@ -3,33 +3,33 @@
   <display-name>Archetype Created Web Application</display-name>
   
   <servlet>
-  	<servlet-name>ProxyServlet</servlet-name>
-  	<servlet-class>minsler.by.ProxyServlet</servlet-class>
+  	<servlet-name>SaveToDiskServlet</servlet-name>
+  	<servlet-class>minsler.by.SaveToDiskServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>ProxyServlet</servlet-name>
+  	<servlet-name>SaveToDiskServlet</servlet-name>
   	<url-pattern>/proxyInMemory</url-pattern>
   </servlet-mapping>
   
   <servlet>
-  	<servlet-name>ProxyServletToDisk</servlet-name>
-  	<servlet-class>minsler.by.ProxyServletToDisk</servlet-class>
+  	<servlet-name>EndReceiverServlet</servlet-name>
+  	<servlet-class>minsler.by.EndReceiverServlet</servlet-class>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>ProxyServletToDisk</servlet-name>
-  	<url-pattern>/proxyToDisk</url-pattern>
+  	<servlet-name>EndReceiverServlet</servlet-name>
+  	<url-pattern>/endreceiver</url-pattern>
   </servlet-mapping>
   
   <servlet>
-  	<servlet-name>ProxyServletToOtherUrl</servlet-name>
-  	<servlet-class>minsler.by.ProxyServletToOtherUrl</servlet-class>
+  	<servlet-name>ProxyServlet</servlet-name>
+  	<servlet-class>minsler.by.ProxyServlet</servlet-class>
   	<init-param>
   		<param-name>receiverUrl</param-name>
-  		<param-value>http://localhost:8080/proxyToDisk</param-value>
+  		<param-value>http://localhost:8080/endreceiver</param-value>
   	</init-param>
   </servlet>
   <servlet-mapping>
-  	<servlet-name>ProxyServletToOtherUrl</servlet-name>
-  	<url-pattern>/proxyToOtherUrl</url-pattern>
+  	<servlet-name>ProxyServlet</servlet-name>
+  	<url-pattern>/proxy</url-pattern>
   </servlet-mapping>
 </web-app>

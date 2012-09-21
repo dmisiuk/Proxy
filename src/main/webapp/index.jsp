@@ -11,13 +11,6 @@
 <input type="file" name="data">
 <input type="submit" value="send file" >
 </form>
-
-<hr>
-<h2>Servlet with Stream to disk</h2>
-<form action="proxyToDisk" method="post" enctype="multipart/form-data" >
-<input type="file" name="data">
-<input type="submit" value="send file" >
-</form>
 <hr>
 </body>
 </html>

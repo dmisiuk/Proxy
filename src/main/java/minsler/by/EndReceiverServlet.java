@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ProxyServletToDisk extends HttpServlet {
+public class EndReceiverServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -46,7 +46,7 @@ public class ProxyServletToDisk extends HttpServlet {
 
 		StringBuilder sb = new StringBuilder();
 		int nread;
-		FileOutputStream fos = new FileOutputStream("attachment.part");
+		FileOutputStream fos = new FileOutputStream("upload/attachment.part");
 		String contentIdPayload = "Content-ID: Payload-0" + "\n\n";
 		int indexFrom = 0;
 		int indexContentIdPayload = -1;
