@@ -1,10 +1,9 @@
-package minsler.by;
+package by.minsler;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -12,11 +11,12 @@ import java.net.URL;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class ProxyServlet extends HttpServlet {
+import by.minsler.boundary.BoundaryGenerator;
+
+public class ProxyServlet extends MainServlet {
 
 	URL receiverUrl = null;
 
@@ -32,7 +32,7 @@ public class ProxyServlet extends HttpServlet {
 		} catch (MalformedURLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("error initialized url");
+			System.out.println("error initializing url");
 		}
 	}
 
@@ -100,7 +100,7 @@ public class ProxyServlet extends HttpServlet {
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
 		// TO-DO boundary
-		String boundaryForNewRequest = generateBoundary();
+		String boundaryForNewRequest = BoundaryGenerator.generateBoundary();
 
 		connection.setRequestProperty("Content-Type",
 				"multipart/form-data; boundary=" + boundaryForNewRequest);
@@ -122,14 +122,14 @@ public class ProxyServlet extends HttpServlet {
 
 		dos.writeBytes(attachmentHeaders);
 
-		availableBytesForWrite -= writeToOutput(dos, sb.substring(endIndex)
-				.getBytes(), availableBytesForWrite);
+		availableBytesForWrite -= super.writeToOutput(dos,
+				sb.substring(endIndex).getBytes(), availableBytesForWrite);
 
 		while ((nread = dis.read(array)) >= 0) {
 			// String substring = new String(array, 0, nread);
 			// System.out.print(substring);
 			// fos.write(array, 0, nread);
-			availableBytesForWrite -= writeToOutput(dos, array, 0, nread,
+			availableBytesForWrite -= super.writeToOutput(dos, array, 0, nread,
 					availableBytesForWrite);
 
 		}
@@ -143,24 +143,4 @@ public class ProxyServlet extends HttpServlet {
 		out.println("success");
 	}
 
-	private static String generateBoundary() {
-		// TO-DO implement generation boundary
-		return "1newpartminslerbyboundary";
-	}
-
-	private int writeToOutput(OutputStream out, byte[] b, int availableToWrite)
-			throws IOException {
-		return this.writeToOutput(out, b, 0, b.length, availableToWrite);
-	}
-
-	private int writeToOutput(OutputStream out, byte[] b, int startIndex,
-			int endIndex, int availableToWrite) throws IOException {
-		if (availableToWrite >= (endIndex - startIndex)) {
-			out.write(b, startIndex, endIndex);
-			return (endIndex - startIndex);
-		} else {
-			out.write(b, startIndex, startIndex + availableToWrite);
-			return availableToWrite;
-		}
-	}
 }

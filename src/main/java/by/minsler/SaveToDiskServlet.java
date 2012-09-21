@@ -1,4 +1,4 @@
-package minsler.by;
+package by.minsler;
 
 import java.io.DataInputStream;
 import java.io.FileOutputStream;

@@ -1,18 +1,16 @@
-package minsler.by;
+package by.minsler;
 
 import java.io.DataInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class EndReceiverServlet extends HttpServlet {
+public class EndReceiverServlet extends MainServlet {
 
 	private static final long serialVersionUID = 1L;
 
@@ -73,16 +71,12 @@ public class EndReceiverServlet extends HttpServlet {
 				- sb.substring(0, endIndex).getBytes().length
 				- endBoundary.getBytes().length;
 
-		availableBytesForWrite -= writeToOutput(fos, sb.substring(endIndex)
-				.getBytes(), availableBytesForWrite);
+		availableBytesForWrite -= super.writeToOutput(fos,
+				sb.substring(endIndex).getBytes(), availableBytesForWrite);
 
 		while ((nread = dis.read(array)) >= 0) {
-			// String substring = new String(array, 0, nread);
-			// System.out.print(substring);
-			// fos.write(array, 0, nread);
-			availableBytesForWrite -= writeToOutput(fos, array, 0, nread,
+			availableBytesForWrite -= super.writeToOutput(fos, array, 0, nread,
 					availableBytesForWrite);
-
 		}
 		System.out.println("isBodyAttachment: " + isBodyAttachment);
 		System.out.println("Index: " + indexContentIdPayload);
@@ -95,22 +89,6 @@ public class EndReceiverServlet extends HttpServlet {
 				+ "<body bgcolor=#fff1df>" + "<h3>" + "успешно" + "</h3>"
 				+ "</body>" + "</html>");
 		out.close();
-	}
-
-	private int writeToOutput(OutputStream out, byte[] b, int availableToWrite)
-			throws IOException {
-		return this.writeToOutput(out, b, 0, b.length, availableToWrite);
-	}
-
-	private int writeToOutput(OutputStream out, byte[] b, int startIndex,
-			int endIndex, int availableToWrite) throws IOException {
-		if (availableToWrite >= (endIndex - startIndex)) {
-			out.write(b, startIndex, endIndex);
-			return (endIndex - startIndex);
-		} else {
-			out.write(b, startIndex, startIndex + availableToWrite);
-			return availableToWrite;
-		}
 	}
 
 }
