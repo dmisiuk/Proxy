@@ -43,7 +43,6 @@ public class ProxyServlet extends MainServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		logger.info("Connected to servlet");
-		System.out.println("ProxyServlet: connected to servlet");
 		resp.setContentType("text/html;charset=utf-8");
 		resp.setCharacterEncoding("utf-8");
 		req.setCharacterEncoding("utf-8");
@@ -51,29 +50,25 @@ public class ProxyServlet extends MainServlet {
 		PrintWriter out = resp.getWriter();
 		String contentType = req.getContentType();
 		DataInputStream dis = new DataInputStream(req.getInputStream());
-		// if is multipart then
 
 		int contentLength = req.getContentLength();
 		String boundaryOfInputRequest = contentType.substring(contentType
 				.indexOf("boundary=") + 9);
 
-		byte array[] = new byte[8 * 1024];
+		// set buffer size fo stream
+		byte buffer[] = new byte[8 * 1024];
+
 		boolean isBodyAttachment = false;
 		StringBuilder sb = new StringBuilder();
 		int nread;
-		String homeDir = getServletContext().getRealPath("/");
-		File soapFile = new File(homeDir, "WEB-INF/upload/uploaded-soap.xml");
-		FileOutputStream fosSoapFile = new FileOutputStream(soapFile);
+
 		String contentIdPayload = "Content-ID: Payload-0" + "\n\n";
 		int indexFrom = 0;
 		int indexContentIdPayload = -1;
 
-		while ((nread = dis.read(array)) >= 0) {
-			// System.out.println("start search from:" + indexFrom);
-			// System.out.println("toDisk: nread: " + nread);
-			// end of stream?
-			String substring = new String(array, 0, nread);
-			// System.out.println("substring: " + substring);
+		// search index of string "Content-ID: Payload-0\n\n"
+		while ((nread = dis.read(buffer)) >= 0) {
+			String substring = new String(buffer, 0, nread);
 			sb.append(substring);
 			if ((indexContentIdPayload = sb
 					.indexOf(contentIdPayload, indexFrom)) >= 0) {
@@ -85,16 +80,26 @@ public class ProxyServlet extends MainServlet {
 		}
 
 		String endBoundary = "--" + boundaryOfInputRequest + "--" + "\n";
+
+		// calculate index of byte start attachment
 		int endIndex = indexContentIdPayload + contentIdPayload.length();
+
+		// search start and end index for soap xml part of request
 		int startSoapXml = sb.indexOf("Content-Id: <soappart>\n\n")
 				+ "Content-Id: <soappart>\n\n".length();
 		int endSaopXml = sb.indexOf("\n--" + boundaryOfInputRequest);
-		System.out.println("statSoap: " + startSoapXml + "\nEndSoap: "
-				+ endSaopXml);
+
+		// create file for save soap part
+		String homeDir = getServletContext().getRealPath("/");
+		File soapFile = new File(homeDir, "WEB-INF/upload/uploaded-soap.xml");
+		FileOutputStream fosSoapFile = new FileOutputStream(soapFile);
+
+		// save to file soap part
 		fosSoapFile.write(sb.substring(startSoapXml, endSaopXml).getBytes());
 		fosSoapFile.flush();
 		fosSoapFile.close();
 
+		// calculate lenth of attachemnt part from input request
 		int availableBytesForWrite = contentLength
 				- sb.substring(0, endIndex).getBytes().length
 				- endBoundary.getBytes().length;
@@ -104,7 +109,8 @@ public class ProxyServlet extends MainServlet {
 
 		connection.setDoOutput(true);
 		connection.setRequestMethod("POST");
-		// TO-DO boundary
+
+		// create boundary for new request to end receiver
 		String boundaryForNewRequest = BoundaryGenerator.generateBoundary();
 
 		connection.setRequestProperty("Content-Type",
@@ -117,9 +123,12 @@ public class ProxyServlet extends MainServlet {
 
 		StringBuilder sbNewRequest = new StringBuilder();
 		sbNewRequest.append(attachmentHeaders).append(multipartEnd);
+
+		// calculate length of content
 		long lentghOfStream = availableBytesForWrite
 				+ new String(sbNewRequest).getBytes().length;
 
+		// set content length for request
 		connection.setFixedLengthStreamingMode(lentghOfStream);
 
 		DataOutputStream dos = new DataOutputStream(
@@ -127,22 +136,20 @@ public class ProxyServlet extends MainServlet {
 
 		dos.writeBytes(attachmentHeaders);
 
+		// start write bytes to output stream of post request
 		availableBytesForWrite -= super.writeToOutput(dos,
 				sb.substring(endIndex).getBytes(), availableBytesForWrite);
 
-		while ((nread = dis.read(array)) >= 0) {
-			// String substring = new String(array, 0, nread);
-			// System.out.print(substring);
-			// fos.write(array, 0, nread);
-			availableBytesForWrite -= super.writeToOutput(dos, array, 0, nread,
-					availableBytesForWrite);
+		while ((nread = dis.read(buffer)) >= 0) {
+			availableBytesForWrite -= super.writeToOutput(dos, buffer, 0,
+					nread, availableBytesForWrite);
 
 		}
 
 		dos.writeBytes(multipartEnd);
 		dos.flush();
 		dos.close();
-		System.out.println("ProxyServlet: response code from toDisk servlet"
+		logger.info("response code from end receiver url: "
 				+ connection.getResponseCode());
 		connection.disconnect();
 		out.println("success");
